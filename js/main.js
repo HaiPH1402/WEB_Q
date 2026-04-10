@@ -1,83 +1,138 @@
 /* =====================================================
-   MAIN.JS — Bạc Tiên Silver Jewelry Store
+   MAIN.JS — Bạc Tiên Silver Jewelry Store (Multi-page)
    ===================================================== */
 
 (function () {
   'use strict';
+
+  /* ── PAGE DETECTION ── */
+  const page       = location.pathname.split('/').pop().replace('.html', '') || 'index';
+  const isHome     = page === 'index' || page === '';
+  const isProducts = page === 'san-pham';
 
   /* ── STATE ── */
   let products = [];
   let cart = JSON.parse(localStorage.getItem('bactien_cart') || '[]');
   let currentFilter = 'all';
 
-  /* ── DOM REFS ── */
-  const productsGrid   = document.getElementById('productsGrid');
-  const cartCount      = document.getElementById('cartCount');
-  const cartSidebar    = document.getElementById('cartSidebar');
-  const cartOverlay    = document.getElementById('cartOverlay');
-  const cartItems      = document.getElementById('cartItems');
-  const cartFooter     = document.getElementById('cartFooter');
-  const cartTotalEl    = document.getElementById('cartTotal');
-  const header         = document.getElementById('header');
-  const backToTop      = document.getElementById('backToTop');
-  const toast          = document.getElementById('toast');
-  const modalOverlay   = document.getElementById('modalOverlay');
-  const productModal   = document.getElementById('productModal');
-  const modalContent   = document.getElementById('modalContent');
-  const searchOverlay  = document.getElementById('searchOverlay');
-  const searchInput    = document.getElementById('searchInput');
-  const navLinks       = document.getElementById('navLinks');
+  /* ── SHARED DOM REFS (present on every page) ── */
+  const cartCount    = document.getElementById('cartCount');
+  const cartSidebar  = document.getElementById('cartSidebar');
+  const cartOverlay  = document.getElementById('cartOverlay');
+  const cartItemsEl  = document.getElementById('cartItems');
+  const cartFooter   = document.getElementById('cartFooter');
+  const cartTotalEl  = document.getElementById('cartTotal');
+  const header       = document.getElementById('header');
+  const backToTop    = document.getElementById('backToTop');
+  const toast        = document.getElementById('toast');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalContent = document.getElementById('modalContent');
+  const searchOL     = document.getElementById('searchOverlay');
+  const searchInput  = document.getElementById('searchInput');
+  const navLinksEl   = document.getElementById('navLinks');
 
   /* ══════════════════════════════════════════
-     PRODUCTS — Fetch from products.json
+     ACTIVE NAV LINK
+  ══════════════════════════════════════════ */
+  function highlightNav() {
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      const href = a.getAttribute('href') || '';
+      let match = false;
+      if (isHome) {
+        match = href === 'index.html';
+      } else {
+        match = href === page + '.html';
+      }
+      a.classList.toggle('active', match);
+    });
+  }
+
+  /* ══════════════════════════════════════════
+     FALLBACK PRODUCTS (offline / local dev)
+  ══════════════════════════════════════════ */
+  const FALLBACK = [
+    { id:'1', name:'Nhẫn Bạc Hoa Hồng',      price:350000, originalPrice:450000, category:'Nhẫn',       description:'Nhẫn bạc 925 hình hoa hồng tinh xảo.',           images:['https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80'],  badge:'Bán Chạy', rating:4.9, reviews:128, inStock:true },
+    { id:'2', name:'Dây Chuyền Bạc Moon',     price:520000, originalPrice:680000, category:'Dây Chuyền', description:'Dây chuyền bạc 925 mặt trăng lưỡi liềm.',         images:['https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80'],  badge:'Mới',     rating:4.8, reviews:89,  inStock:true },
+    { id:'3', name:'Vòng Tay Bạc Celtic',     price:420000, originalPrice:420000, category:'Vòng Tay',  description:'Vòng tay bạc 925 họa tiết Celtic.',               images:['https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&q=80'],  badge:'',        rating:4.7, reviews:65,  inStock:true },
+    { id:'4', name:'Bông Tai Bạc Ngôi Sao',   price:280000, originalPrice:320000, category:'Bông Tai',  description:'Bông tai bạc 925 hình ngôi sao.',                 images:['https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600&q=80'],  badge:'Sale',    rating:4.6, reviews:42,  inStock:true },
+    { id:'5', name:'Lắc Chân Bạc Duyên Dáng', price:390000, originalPrice:480000, category:'Lắc Chân',  description:'Lắc chân bạc 925 thiết kế nhẹ nhàng.',           images:['https://images.unsplash.com/photo-1573408301185-9519f94aab18?w=600&q=80'],  badge:'Hot',     rating:4.8, reviews:97,  inStock:true },
+    { id:'6', name:'Mặt Dây Chuyền Bạc Tâm',  price:460000, originalPrice:460000, category:'Dây Chuyền', description:'Mặt dây chuyền bạc 925 hình trái tim.',          images:['https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&q=80'],  badge:'Mới',     rating:5.0, reviews:34,  inStock:true }
+  ];
+
+  /* ══════════════════════════════════════════
+     LOAD PRODUCTS
   ══════════════════════════════════════════ */
   async function loadProducts() {
-    // Ưu tiên dữ liệu admin từ localStorage (đồng bộ tức thì khi sửa ở admin)
+    if (!document.getElementById('productsGrid')) return;
+
     const cached = localStorage.getItem('bactien_products');
     if (cached) {
       try {
         products = JSON.parse(cached);
-        renderProducts(products);
+        applyDisplay();
         return;
       } catch(e) {}
     }
-
     try {
-      const res  = await fetch('products.json?t=' + Date.now());
-      products   = await res.json();
+      const res = await fetch('products.json?t=' + Date.now());
+      products = await res.json();
     } catch (e) {
-      // Fallback: sample data if fetch fails (local dev)
-      products = [
-        { id:"1", name:"Nhẫn Bạc Hoa Hồng", price:350000, originalPrice:450000, category:"Nhẫn", description:"Nhẫn bạc 925 hình hoa hồng tinh xảo.", images:["https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80"], badge:"Bán Chạy", rating:4.9, reviews:128, inStock:true },
-        { id:"2", name:"Dây Chuyền Bạc Moon", price:520000, originalPrice:680000, category:"Dây Chuyền", description:"Dây chuyền bạc 925 mặt trăng lưỡi liềm.", images:["https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80"], badge:"Mới", rating:4.8, reviews:89, inStock:true },
-        { id:"3", name:"Vòng Tay Bạc Celtic", price:420000, originalPrice:420000, category:"Vòng Tay", description:"Vòng tay bạc 925 họa tiết Celtic.", images:["https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&q=80"], badge:"", rating:4.7, reviews:65, inStock:true },
-        { id:"4", name:"Bông Tai Bạc Ngôi Sao", price:280000, originalPrice:320000, category:"Bông Tai", description:"Bông tai bạc 925 hình ngôi sao.", images:["https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600&q=80"], badge:"Sale", rating:4.6, reviews:42, inStock:true },
-        { id:"5", name:"Lắc Chân Bạc Duyên Dáng", price:390000, originalPrice:480000, category:"Lắc Chân", description:"Lắc chân bạc 925 thiết kế nhẹ nhàng.", images:["https://images.unsplash.com/photo-1573408301185-9519f94aab18?w=600&q=80"], badge:"Hot", rating:4.8, reviews:97, inStock:true },
-        { id:"6", name:"Mặt Dây Chuyền Bạc Tâm", price:460000, originalPrice:460000, category:"Dây Chuyền", description:"Mặt dây chuyền bạc 925 hình trái tim.", images:["https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&q=80"], badge:"Mới", rating:5.0, reviews:34, inStock:true }
-      ];
+      products = [...FALLBACK];
+    }
+    applyDisplay();
+  }
+
+  /* Decide what to render based on current page + URL params */
+  function applyDisplay() {
+    if (isProducts) {
+      const sp  = new URLSearchParams(location.search);
+      const cat = sp.get('cat');
+      const q   = sp.get('q');
+      if (cat) {
+        currentFilter = cat;
+        document.querySelectorAll('.filter-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.cat === cat));
+        renderProducts(products.filter(p => p.category === cat));
+        return;
+      }
+      if (q) {
+        const lq = q.toLowerCase();
+        renderProducts(products.filter(p =>
+          p.name.toLowerCase().includes(lq) ||
+          p.category.toLowerCase().includes(lq) ||
+          (p.description || '').toLowerCase().includes(lq)
+        ));
+        return;
+      }
+      renderProducts(products);
+      return;
+    }
+    if (isHome) {
+      renderProducts(products.slice(0, 4));
+      return;
     }
     renderProducts(products);
   }
 
   /* ── RENDER PRODUCTS ── */
   function renderProducts(list) {
-    if (!productsGrid) return;
-    productsGrid.innerHTML = '';
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
 
     if (!list.length) {
-      productsGrid.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:80px 24px;">
-          <p style="font-size:3rem; opacity:.3">🔍</p>
-          <p style="color:var(--text-muted); margin-top:16px">Không tìm thấy sản phẩm phù hợp</p>
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:80px 24px;">
+          <p style="font-size:3rem;opacity:.3">🔍</p>
+          <p style="color:var(--text-muted);margin-top:16px">Không tìm thấy sản phẩm phù hợp</p>
         </div>`;
       return;
     }
 
     list.forEach(p => {
-      const thumb = (p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/400x400?text=No+Image';
+      const thumb = p.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image';
       const discount = p.originalPrice > p.price
-        ? Math.round((1 - p.price / p.originalPrice) * 100)
-        : 0;
+        ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
       const card = document.createElement('div');
       card.className = 'product-card reveal';
@@ -96,25 +151,22 @@
           <div class="product-name">${p.name}</div>
           <div class="product-stars">
             <span class="stars-value">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span>
-            <span style="color:var(--gold); font-weight:600; font-size:.85rem">${p.rating}</span>
+            <span style="color:var(--gold);font-weight:600;font-size:.85rem">${p.rating}</span>
             <span class="stars-count">(${p.reviews})</span>
           </div>
           <div class="product-price">
             <span class="price-current">${formatPrice(p.price)}</span>
             ${p.originalPrice > p.price ? `<span class="price-original">${formatPrice(p.originalPrice)}</span>` : ''}
-            ${discount ? `<span class="product-badge" style="position:static; font-size:.7rem">-${discount}%</span>` : ''}
+            ${discount ? `<span class="product-badge" style="position:static;font-size:.7rem">-${discount}%</span>` : ''}
           </div>
           <button class="add-to-cart" data-add="${p.id}">🛒 Thêm Vào Giỏ</button>
         </div>`;
-
-      productsGrid.appendChild(card);
+      grid.appendChild(card);
     });
-
-    // Observe for reveal animation
     observeReveal();
   }
 
-  /* ── FILTER ── */
+  /* ── FILTER BUTTONS (san-pham.html) ── */
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -124,36 +176,34 @@
         ? products
         : products.filter(p => p.category === currentFilter);
       renderProducts(filtered);
+      const url = new URL(location.href);
+      if (currentFilter === 'all') url.searchParams.delete('cat');
+      else url.searchParams.set('cat', currentFilter);
+      history.replaceState(null, '', url);
     });
   });
 
-  /* Category cards also filter */
+  /* ── CATEGORY CARDS → navigate to san-pham.html?cat=X ── */
   document.querySelectorAll('.category-card').forEach(card => {
     card.addEventListener('click', () => {
       const cat = card.dataset.filter;
-      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => {
-        document.querySelectorAll('.filter-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.cat === cat);
-        });
-        renderProducts(products.filter(p => p.category === cat));
-      }, 600);
+      window.location.href = 'san-pham.html?cat=' + encodeURIComponent(cat);
     });
   });
 
-  /* ── PRODUCT DELEGATES ── */
+  /* ── PRODUCT CLICK DELEGATES ── */
   document.addEventListener('click', e => {
-    const addBtn   = e.target.closest('[data-add]');
+    const addBtn  = e.target.closest('[data-add]');
     const quickBtn = e.target.closest('[data-quick]');
-    const pcardBtn = e.target.closest('.product-card');
+    const pcardEl  = e.target.closest('.product-card');
 
     if (addBtn) {
       const p = products.find(p => p.id === addBtn.dataset.add);
       if (p) addToCart(p);
     } else if (quickBtn) {
       openModal(quickBtn.dataset.quick);
-    } else if (pcardBtn && !e.target.closest('button')) {
-      openModal(pcardBtn.dataset.id);
+    } else if (pcardEl && !e.target.closest('button')) {
+      openModal(pcardEl.dataset.id);
     }
   });
 
@@ -191,28 +241,30 @@
   }
 
   function updateCartUI() {
+    if (!cartCount) return;
     const total = cart.reduce((s, i) => s + i.qty, 0);
     cartCount.textContent = total;
     cartCount.classList.toggle('show', total > 0);
   }
 
   function renderCartItems() {
+    if (!cartItemsEl) return;
     if (!cart.length) {
-      cartItems.innerHTML = `
+      cartItemsEl.innerHTML = `
         <div class="cart-empty">
           <span>🛒</span>
           <p>Giỏ hàng trống</p>
-          <a href="#products" class="btn-primary" id="startShop">Mua Sắm Ngay</a>
+          <a href="san-pham.html" class="btn-primary">Mua Sắm Ngay</a>
         </div>`;
-      cartFooter.style.display = 'none';
+      if (cartFooter) cartFooter.style.display = 'none';
       return;
     }
 
-    cartFooter.style.display = 'block';
+    if (cartFooter) cartFooter.style.display = 'block';
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    cartTotalEl.textContent = formatPrice(total);
+    if (cartTotalEl) cartTotalEl.textContent = formatPrice(total);
 
-    cartItems.innerHTML = cart.map(item => `
+    cartItemsEl.innerHTML = cart.map(item => `
       <div class="cart-item">
         <div class="cart-item-img">
           <img src="${item.images?.[0] || ''}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;">
@@ -233,19 +285,19 @@
   window._cartQty    = (id, d) => changeQty(id, d);
   window._cartRemove = (id)    => removeFromCart(id);
 
-  document.getElementById('cartBtn').addEventListener('click', () => {
+  document.getElementById('cartBtn')?.addEventListener('click', () => {
     renderCartItems();
-    cartSidebar.classList.add('open');
-    cartOverlay.classList.add('active');
+    cartSidebar?.classList.add('open');
+    cartOverlay?.classList.add('active');
     document.body.style.overflow = 'hidden';
   });
 
-  document.getElementById('closeCart').addEventListener('click', closeCart);
-  cartOverlay.addEventListener('click', closeCart);
+  document.getElementById('closeCart')?.addEventListener('click', closeCart);
+  cartOverlay?.addEventListener('click', closeCart);
 
   function closeCart() {
-    cartSidebar.classList.remove('open');
-    cartOverlay.classList.remove('active');
+    cartSidebar?.classList.remove('open');
+    cartOverlay?.classList.remove('active');
     document.body.style.overflow = '';
   }
 
@@ -259,9 +311,10 @@
   ══════════════════════════════════════════ */
   function openModal(id) {
     const p = products.find(p => p.id == id);
-    if (!p) return;
+    if (!p || !modalContent) return;
     const thumb = p.images?.[0] || 'https://via.placeholder.com/400';
-    const discount = p.originalPrice > p.price ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+    const discount = p.originalPrice > p.price
+      ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
     modalContent.innerHTML = `
       <div class="modal-inner">
@@ -274,8 +327,8 @@
           <div class="modal-stars">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))} ${p.rating} (${p.reviews} đánh giá)</div>
           <div class="modal-price">
             ${formatPrice(p.price)}
-            ${p.originalPrice > p.price ? `<span style="font-size:.9rem; color:var(--text-muted); font-weight:400; text-decoration:line-through; margin-left:8px">${formatPrice(p.originalPrice)}</span>` : ''}
-            ${discount ? `<span style="font-size:.8rem; background:var(--grad-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-left:8px">-${discount}%</span>` : ''}
+            ${p.originalPrice > p.price ? `<span style="font-size:.9rem;color:var(--text-muted);font-weight:400;text-decoration:line-through;margin-left:8px">${formatPrice(p.originalPrice)}</span>` : ''}
+            ${discount ? `<span style="font-size:.8rem;background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-left:8px">-${discount}%</span>` : ''}
           </div>
           <p class="modal-desc">${p.description}</p>
           <div class="modal-actions">
@@ -285,7 +338,7 @@
         </div>
       </div>`;
 
-    modalOverlay.classList.add('active');
+    modalOverlay?.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
@@ -294,44 +347,52 @@
     if (p) { addToCart(p); closeModal(); }
   };
 
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.getElementById('modalClose')?.addEventListener('click', closeModal);
+  modalOverlay?.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeSearch(); } });
 
   function closeModal() {
-    modalOverlay.classList.remove('active');
+    modalOverlay?.classList.remove('active');
     document.body.style.overflow = '';
   }
 
   /* ══════════════════════════════════════════
      SEARCH
   ══════════════════════════════════════════ */
-  document.getElementById('searchBtn').addEventListener('click', () => {
-    searchOverlay.classList.add('active');
-    searchInput.focus();
+  document.getElementById('searchBtn')?.addEventListener('click', () => {
+    searchOL?.classList.add('active');
+    searchInput?.focus();
   });
-  document.getElementById('closeSearch').addEventListener('click', () => {
-    searchOverlay.classList.remove('active');
-    searchInput.value = '';
-  });
+  document.getElementById('closeSearch')?.addEventListener('click', closeSearch);
+
+  function closeSearch() {
+    searchOL?.classList.remove('active');
+    if (searchInput) searchInput.value = '';
+  }
 
   let searchTimer;
-  searchInput.addEventListener('input', () => {
+  searchInput?.addEventListener('input', () => {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
-      const q = searchInput.value.trim().toLowerCase();
+      const q = searchInput.value.trim();
       if (!q) return;
-      const found = products.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q)
-      );
-      searchOverlay.classList.remove('active');
-      searchInput.value = '';
-      renderProducts(found);
-      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-      // Reset filter buttons
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === 'all'));
+
+      if (isProducts) {
+        /* Filter in-place on products page */
+        const lq = q.toLowerCase();
+        const found = products.filter(p =>
+          p.name.toLowerCase().includes(lq) ||
+          p.category.toLowerCase().includes(lq) ||
+          (p.description || '').toLowerCase().includes(lq)
+        );
+        closeSearch();
+        renderProducts(found);
+        document.querySelectorAll('.filter-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.cat === 'all'));
+      } else {
+        /* Redirect to products page with query param */
+        window.location.href = 'san-pham.html?q=' + encodeURIComponent(q);
+      }
     }, 300);
   });
 
@@ -340,14 +401,14 @@
   ══════════════════════════════════════════ */
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
-    header.classList.toggle('scrolled', scrollY > 60);
-    backToTop.classList.toggle('show', scrollY > 400);
+    header?.classList.toggle('scrolled', scrollY > 60);
+    backToTop?.classList.toggle('show', scrollY > 400);
   });
-  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-  /* ── Intersection observer for reveal ── */
+  /* ── Intersection observer for .reveal ── */
   function observeReveal() {
-    const io = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver(entries => {
       entries.forEach(el => {
         if (el.isIntersecting) { el.target.classList.add('visible'); io.unobserve(el.target); }
       });
@@ -359,19 +420,19 @@
      MOBILE MENU
   ══════════════════════════════════════════ */
   const menuToggle = document.getElementById('menuToggle');
-  menuToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-    document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+  menuToggle?.addEventListener('click', () => {
+    navLinksEl?.classList.toggle('open');
+    document.body.style.overflow = navLinksEl?.classList.contains('open') ? 'hidden' : '';
   });
-  navLinks.querySelectorAll('a').forEach(a => {
+  navLinksEl?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
-      navLinks.classList.remove('open');
+      navLinksEl.classList.remove('open');
       document.body.style.overflow = '';
     });
   });
 
   /* ══════════════════════════════════════════
-     CONTACT FORM
+     CONTACT FORM (lien-he.html)
   ══════════════════════════════════════════ */
   document.getElementById('contactForm')?.addEventListener('submit', e => {
     e.preventDefault();
@@ -384,6 +445,7 @@
   ══════════════════════════════════════════ */
   let toastTimer;
   function showToast(msg) {
+    if (!toast) return;
     toast.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
@@ -397,11 +459,9 @@
     return n.toLocaleString('vi-VN') + '₫';
   }
 
-  /* ══════════════════════════════════════════
-     REVEAL SECTIONS
-  ══════════════════════════════════════════ */
+  /* ── Reveal sections (trust/category/testimonial/contact) ── */
   function setupRevealSections() {
-    const io = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver(entries => {
       entries.forEach(el => {
         if (el.isIntersecting) { el.target.classList.add('visible'); io.unobserve(el.target); }
       });
@@ -416,6 +476,7 @@
      INIT
   ══════════════════════════════════════════ */
   function init() {
+    highlightNav();
     loadProducts();
     updateCartUI();
     setupRevealSections();

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sản Phẩm — Bạc Tiên Silver Jewelry</title>
+  <meta name="description" content="Khám phá toàn bộ bộ sưu tập trang sức bạc 925 cao cấp — Nhẫn, Dây Chuyền, Vòng Tay, Bông Tai, Lắc Chân.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header" id="header">
+  <div class="header-top">
+    <p>✨ Miễn phí vận chuyển đơn từ 500K &nbsp;|&nbsp; Bảo hành 12 tháng &nbsp;|&nbsp; Đổi trả 7 ngày</p>
+  </div>
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-gem">⬡</div>
+      <div>
+        <span class="logo-main">Bạc Tiên</span>
+        <span class="logo-sub">Silver Jewelry</span>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="danh-muc.html">Danh Mục</a></li>
+      <li><a href="san-pham.html">Sản Phẩm</a></li>
+      <li><a href="ve-chung-toi.html">Về Chúng Tôi</a></li>
+      <li><a href="lien-he.html">Liên Hệ</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="search-btn" id="searchBtn" title="Tìm kiếm">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="cart-btn" id="cartBtn" title="Giỏ hàng">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- ===== SEARCH ===== -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm trang sức bạc..." autocomplete="off">
+    <button id="closeSearch">✕</button>
+  </div>
+</div>
+
+<!-- ===== PAGE BANNER ===== -->
+<section class="page-banner">
+  <div class="page-banner-content">
+    <p class="section-eyebrow">Bạc Tiên</p>
+    <h1>Sản Phẩm</h1>
+    <p>Khám phá toàn bộ bộ sưu tập trang sức bạc 925 tinh xảo</p>
+    <div class="breadcrumb-nav">
+      <a href="index.html">Trang Chủ</a>
+      <span>›</span>
+      <span>Sản Phẩm</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRODUCTS ===== -->
+<section class="products-section" id="products" style="padding-top:60px">
+  <div class="filter-bar">
+    <button class="filter-btn active" data-cat="all">Tất Cả</button>
+    <button class="filter-btn" data-cat="Nhẫn">Nhẫn</button>
+    <button class="filter-btn" data-cat="Dây Chuyền">Dây Chuyền</button>
+    <button class="filter-btn" data-cat="Vòng Tay">Vòng Tay</button>
+    <button class="filter-btn" data-cat="Bông Tai">Bông Tai</button>
+    <button class="filter-btn" data-cat="Lắc Chân">Lắc Chân</button>
+  </div>
+
+  <div class="products-grid" id="productsGrid">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Đang tải sản phẩm...</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <div class="logo-gem">⬡</div>
+        <div>
+          <span class="logo-main">Bạc Tiên</span>
+          <span class="logo-sub">Silver Jewelry</span>
+        </div>
+      </a>
+      <p>Trang sức bạc 925 cao cấp, chế tác thủ công tỉ mỉ — vẻ đẹp vĩnh cửu dành cho bạn.</p>
+      <div class="social-links">
+        <a href="#" class="social-link" title="Facebook">fb</a>
+        <a href="#" class="social-link" title="Instagram">ig</a>
+        <a href="#" class="social-link" title="TikTok">tk</a>
+        <a href="#" class="social-link" title="YouTube">yt</a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <h4>Sản Phẩm</h4>
+      <ul>
+        <li><a href="san-pham.html?cat=Nh%E1%BA%ABn">Nhẫn Bạc</a></li>
+        <li><a href="san-pham.html?cat=D%C3%A2y+Chuy%E1%BB%81n">Dây Chuyền</a></li>
+        <li><a href="san-pham.html?cat=V%C3%B2ng+Tay">Vòng Tay</a></li>
+        <li><a href="san-pham.html?cat=B%C3%B4ng+Tai">Bông Tai</a></li>
+        <li><a href="san-pham.html?cat=L%E1%BA%AFc+Ch%C3%A2n">Lắc Chân</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Hỗ Trợ</h4>
+      <ul>
+        <li><a href="lien-he.html">Liên Hệ</a></li>
+        <li><a href="ve-chung-toi.html">Về Chúng Tôi</a></li>
+        <li><a href="#">Chính Sách Đổi Trả</a></li>
+        <li><a href="#">Bảo Hành</a></li>
+        <li><a href="#">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-newsletter">
+      <h4>Nhận Ưu Đãi</h4>
+      <p>Đăng ký nhận thông báo về sản phẩm mới và khuyến mại đặc biệt.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Email của bạn...">
+        <button>→</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Bạc Tiên Silver Jewelry. Tất cả quyền được bảo lưu.</p>
+    <p>Made with ♥ in Vietnam</p>
+  </div>
+</footer>
+
+<!-- ===== CART SIDEBAR ===== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Giỏ Hàng</h3>
+    <button id="closeCart">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <span>🛒</span>
+      <p>Giỏ hàng trống</p>
+      <a href="san-pham.html" class="btn-primary">Mua Sắm Ngay</a>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Tổng cộng:</span>
+      <strong id="cartTotal">0₫</strong>
+    </div>
+    <button class="btn-primary btn-full" id="checkoutBtn">Thanh Toán</button>
+    <p class="cart-note">Miễn phí vận chuyển từ 500K | Bảo hành 12 tháng</p>
+  </div>
+</div>
+
+<!-- ===== PRODUCT MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="product-modal" id="productModal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ===== BACK TO TOP ===== -->
+<button class="back-to-top" id="backToTop" title="Lên đầu trang">↑</button>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
