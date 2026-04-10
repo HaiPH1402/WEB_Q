@@ -451,8 +451,14 @@
   window.saveGithubConfig = function() {
     // Trim để loại bỏ khoảng trắng vô tình
     const token = (document.getElementById('gh-token')?.value || '').replace(/\s+/g, '');
+    // Tự động trích tên repo nếu user paste URL đầy đủ (vd: https://github.com/user/repo)
+    const rawRepo = getValue('gh-repo').trim();
+    const repoName = rawRepo.replace(/^https?:\/\/github\.com\/[^/]+\//, '').replace(/\/$/, '').trim();
+    const repoInput = document.getElementById('gh-repo');
+    if (repoInput) repoInput.value = repoName;
+
     localStorage.setItem(KEYS.ghUser,   getValue('gh-username'));
-    localStorage.setItem(KEYS.ghRepo,   getValue('gh-repo'));
+    localStorage.setItem(KEYS.ghRepo,   repoName);
     localStorage.setItem(KEYS.ghBranch, getValue('gh-branch') || 'main');
     localStorage.setItem(KEYS.ghPath,   getValue('gh-filepath') || 'products.json');
     localStorage.setItem(KEYS.ghToken,  token);
