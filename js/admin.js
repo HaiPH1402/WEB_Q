@@ -437,21 +437,29 @@
   }
 
   function getGithubConfig() {
+    // Trim mọi whitespace/newline khỏi token (lỗi thường gặp khi copy-paste)
+    const rawToken = localStorage.getItem(KEYS.ghToken) || '';
     return {
-      user:   localStorage.getItem(KEYS.ghUser)   || '',
-      repo:   localStorage.getItem(KEYS.ghRepo)   || '',
-      branch: localStorage.getItem(KEYS.ghBranch) || 'main',
-      path:   localStorage.getItem(KEYS.ghPath)   || 'products.json',
-      token:  localStorage.getItem(KEYS.ghToken)  || '',
+      user:   (localStorage.getItem(KEYS.ghUser)   || '').trim(),
+      repo:   (localStorage.getItem(KEYS.ghRepo)   || '').trim(),
+      branch: (localStorage.getItem(KEYS.ghBranch) || 'main').trim(),
+      path:   (localStorage.getItem(KEYS.ghPath)   || 'products.json').trim(),
+      token:  rawToken.replace(/\s+/g, ''),  // xóa mọi whitespace
     };
   }
 
   window.saveGithubConfig = function() {
+    // Trim để loại bỏ khoảng trắng vô tình
+    const token = (document.getElementById('gh-token')?.value || '').replace(/\s+/g, '');
     localStorage.setItem(KEYS.ghUser,   getValue('gh-username'));
     localStorage.setItem(KEYS.ghRepo,   getValue('gh-repo'));
     localStorage.setItem(KEYS.ghBranch, getValue('gh-branch') || 'main');
     localStorage.setItem(KEYS.ghPath,   getValue('gh-filepath') || 'products.json');
-    localStorage.setItem(KEYS.ghToken,  getValue('gh-token'));
+    localStorage.setItem(KEYS.ghToken,  token);
+
+    // Cập nhật lại input với token đã trim
+    const tokenInput = document.getElementById('gh-token');
+    if (tokenInput) tokenInput.value = token;
 
     const cfg = getGithubConfig();
     const userEl = document.getElementById('usernameDisplay');
@@ -487,28 +495,44 @@
     saveGithubConfig();
     const cfg = getGithubConfig();
     if (!cfg.user || !cfg.repo || !cfg.token) {
-      showStatus('red', 'Vui lòng điền đầy đủ thông tin!');
+      showStatus('red', '✕ Vui lòng điền đủ: Username, Repo và Token!');
       return;
     }
+    if (!cfg.token.startsWith('ghp_') && !cfg.token.startsWith('github_pat_')) {
+      showStatus('yellow', '⚠ Token có thể không đúng định dạng (phải bắt đầu bằng ghp_ hoặc github_pat_)');
+    }
 
-    showStatus('yellow', 'Đang kiểm tra kết nối...');
+    showStatus('yellow', '⏳ Đang kiểm tra kết nối...');
     try {
       const res = await fetch(`https://api.github.com/repos/${cfg.user}/${cfg.repo}`, {
-        headers: { Authorization: `Bearer ${cfg.token}`, 'X-GitHub-Api-Version': '2022-11-28' }
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          Authorization: `Bearer ${cfg.token}`,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
       });
       if (res.ok) {
         const data = await res.json();
-        showStatus('green', `✓ Kết nối thành công! Repo: ${data.full_name} | ${data.visibility}`);
-        showToast('✓ Kết nối thành công!', 'success');
+        showStatus('green', `✓ Thành công! Repo: ${data.full_name} (${data.visibility}) | Default branch: ${data.default_branch}`);
+        showToast('✓ Kết nối GitHub thành công!', 'success');
       } else if (res.status === 401) {
-        showStatus('red', '✕ Token không hợp lệ hoặc hết hạn');
+        showStatus('red', '✕ Token sai hoặc hết hạn — Tạo token mới tại github.com/settings/tokens');
+      } else if (res.status === 403) {
+        showStatus('red', '✕ Token thiếu quyền — Cần quyền Contents: Read & Write');
       } else if (res.status === 404) {
-        showStatus('red', '✕ Không tìm thấy repository. Kiểm tra username/repo name');
+        showStatus('red', `✕ Không tìm thấy repo "${cfg.user}/${cfg.repo}" — Kiểm tra lại tên`);
       } else {
-        showStatus('red', `✕ Lỗi HTTP ${res.status}`);
+        const errData = await res.json().catch(() => ({}));
+        showStatus('red', `✕ Lỗi HTTP ${res.status}: ${errData.message || 'Unknown error'}`);
       }
     } catch(e) {
-      showStatus('red', '✕ Lỗi mạng: ' + e.message);
+      if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
+        showStatus('red', '✕ Không thể kết nối GitHub API — Kiểm tra internet hoặc tắt extension chặn mạng (VPN/AdBlock)');
+      } else {
+        showStatus('red', '✕ Lỗi: ' + e.message);
+      }
     }
   };
 
@@ -526,24 +550,29 @@
      PUBLISH TO GITHUB
   ══════════════════════════════════════════ */
   window.publishToGitHub = async function() {
+    // Tự động lưu config từ form nếu đang ở trang GitHub
+    const activePage = document.querySelector('.page.active');
+    if (activePage?.id === 'page-github') saveGithubConfig();
+
     const cfg = getGithubConfig();
     if (!cfg.user || !cfg.repo || !cfg.token) {
-      showToast('Vui lòng cấu hình GitHub trước!', 'error');
+      showToast('⚠ Vui lòng vào GitHub Setup và điền đầy đủ thông tin!', 'error');
       switchPage('github');
       return;
     }
 
     // Open modal
-    const modal       = document.getElementById('publishModal');
-    const statusEl    = document.getElementById('publishStatus');
-    const progressEl  = document.getElementById('publishProgress');
-    const logEl       = document.getElementById('publishLog');
-    const footerEl    = document.getElementById('publishFooter');
-    const viewBtn     = document.getElementById('viewSiteBtn');
+    const modal      = document.getElementById('publishModal');
+    const statusEl   = document.getElementById('publishStatus');
+    const progressEl = document.getElementById('publishProgress');
+    const logEl      = document.getElementById('publishLog');
+    const footerEl   = document.getElementById('publishFooter');
+    const viewBtn    = document.getElementById('viewSiteBtn');
 
     modal.classList.add('open');
     footerEl.style.display = 'none';
     progressEl.style.width = '0%';
+    progressEl.style.background = '';
     logEl.style.display = 'none';
     logEl.innerHTML = '';
 
@@ -551,76 +580,113 @@
     function setProgress(pct) { progressEl.style.width = pct + '%'; }
     function appendLog(msg) {
       logEl.style.display = 'block';
-      logEl.innerHTML += `<div>${msg}</div>`;
+      logEl.innerHTML += `<div>${new Date().toLocaleTimeString('vi-VN')} — ${msg}</div>`;
       logEl.scrollTop = logEl.scrollHeight;
     }
 
     try {
+      appendLog(`📡 Kết nối tới: github.com/${cfg.user}/${cfg.repo}`);
+      appendLog(`📄 File đích: ${cfg.path} (branch: ${cfg.branch})`);
       setStatus('🔍 Lấy thông tin file hiện tại...');
-      setProgress(20);
+      setProgress(15);
 
-      // Get current file SHA (needed for update)
       const apiBase = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${cfg.path}`;
       const headers = {
         Authorization: `Bearer ${cfg.token}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
       };
 
+      // Bước 1: Lấy SHA file hiện tại
       let sha = null;
-      const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers });
+      const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers
+      });
+
       if (getRes.ok) {
         const fileData = await getRes.json();
         sha = fileData.sha;
-        appendLog(`✓ Tìm thấy file hiện tại (SHA: ${sha.slice(0,7)}...)`);
+        appendLog(`✓ File tồn tại (SHA: ${sha.slice(0,8)}...)`);
       } else if (getRes.status === 404) {
-        appendLog('📝 File chưa tồn tại — sẽ tạo mới');
+        appendLog('📝 File chưa có — sẽ tạo mới');
+      } else if (getRes.status === 401) {
+        throw new Error('Token không hợp lệ (HTTP 401). Vào GitHub Setup để cập nhật token.');
+      } else if (getRes.status === 403) {
+        throw new Error('Token thiếu quyền (HTTP 403). Token cần quyền Contents: Read & Write.');
       } else {
-        throw new Error(`Không thể lấy file: HTTP ${getRes.status}`);
+        const errBody = await getRes.json().catch(() => ({}));
+        throw new Error(`Lỗi HTTP ${getRes.status}: ${errBody.message || 'Không rõ nguyên nhân'}`);
       }
 
-      setProgress(50);
-      setStatus('📤 Đang đẩy dữ liệu lên GitHub...');
+      setProgress(45);
+      setStatus('🔢 Mã hóa dữ liệu...');
 
-      // Encode to base64
+      // Bước 2: Encode Base64 (hỗ trợ tiếng Việt UTF-8)
       const jsonStr = JSON.stringify(products, null, 2);
-      const b64     = btoa(unescape(encodeURIComponent(jsonStr)));
+      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      appendLog(`✓ Đã mã hóa ${products.length} sản phẩm (${(jsonStr.length/1024).toFixed(1)}KB)`);
 
+      setProgress(60);
+      setStatus('📤 Đang đẩy lên GitHub...');
+
+      // Bước 3: PUT file lên GitHub
       const body = {
-        message: `🔄 Update products.json - ${new Date().toLocaleString('vi-VN')}`,
+        message: `🛍️ Update sản phẩm - ${new Date().toLocaleString('vi-VN')}`,
         content: b64,
-        branch:  cfg.branch,
+        branch: cfg.branch,
       };
       if (sha) body.sha = sha;
 
       const putRes = await fetch(apiBase, {
         method: 'PUT',
+        mode: 'cors',
         headers,
         body: JSON.stringify(body)
       });
 
       if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(err.message || `HTTP ${putRes.status}`);
+        const errData = await putRes.json().catch(() => ({}));
+        if (putRes.status === 409) {
+          throw new Error('Xung đột version (HTTP 409). Nhấn 🔄 Đồng Bộ rồi thử lại.');
+        } else if (putRes.status === 422) {
+          throw new Error('SHA không đúng (HTTP 422). Nhấn 🔄 Đồng Bộ rồi thử lại.');
+        }
+        throw new Error(errData.message || `HTTP ${putRes.status}`);
       }
 
-      setProgress(90);
-      appendLog('✓ Đã đẩy products.json lên GitHub thành công!');
-      appendLog('⏳ GitHub Pages đang rebuild... (~30-60 giây)');
+      const putData = await putRes.json();
+      appendLog(`✓ Commit thành công: ${putData.commit?.sha?.slice(0,8) || 'OK'}`);
+      appendLog('⏳ GitHub Pages đang rebuild (~30-60 giây)...');
 
-      setStatus('✅ Đăng lên thành công!');
       setProgress(100);
+      setStatus('✅ Đăng lên GitHub thành công!');
 
+      // Xóa cache cũ sau khi publish thành công
       viewBtn.href = `https://${cfg.user}.github.io/${cfg.repo}/`;
       footerEl.style.display = 'flex';
-      showToast('🚀 Đăng lên GitHub thành công!', 'success');
+      showToast('🚀 Thành công! Website sẽ cập nhật sau ~60 giây.', 'success');
 
     } catch(e) {
-      setStatus('❌ Lỗi: ' + e.message);
-      appendLog('✕ Lỗi: ' + e.message);
+      let errMsg = e.message || 'Lỗi không xác định';
+
+      // Xử lý lỗi mạng
+      if (errMsg.toLowerCase().includes('failed to fetch') ||
+          errMsg.toLowerCase().includes('networkerror') ||
+          errMsg.toLowerCase().includes('network request failed')) {
+        errMsg = 'Không thể kết nối GitHub API. Kiểm tra:\n'
+          + '• Có kết nối internet không?\n'
+          + '• Extension chặn mạng (uBlock, VPN)? Thử tắt thử\n'
+          + '• Thử mở DevTools (F12) → Console để xem chi tiết';
+      }
+
+      setStatus('❌ ' + errMsg.split('\n')[0]);
+      appendLog('✕ ' + errMsg);
       progressEl.style.background = 'linear-gradient(135deg, #f06060, #f09090)';
       footerEl.style.display = 'flex';
-      showToast('Lỗi khi đăng lên GitHub!', 'error');
+      showToast('❌ Lỗi! Xem chi tiết trong cửa sổ.', 'error');
     }
   };
 
