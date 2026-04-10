@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Bạc Tiên Silver Jewelry</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <div class="logo-text">
+        <strong>Bạc Tiên Admin</strong>
+        <small>Quản Trị Hệ Thống</small>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-label">Tổng Quan</div>
+      <div class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Sản Phẩm</div>
+      <div class="nav-item" data-page="products">
+        <span class="nav-icon">💍</span> Sản Phẩm
+        <span class="nav-badge" id="productCountBadge">0</span>
+      </div>
+      <div class="nav-item" data-page="add-product">
+        <span class="nav-icon">➕</span> Thêm Sản Phẩm
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Hệ Thống</div>
+      <div class="nav-item" data-page="github">
+        <span class="nav-icon">🔗</span> GitHub Setup
+      </div>
+      <div class="nav-item" data-page="export">
+        <span class="nav-icon">📦</span> Xuất / Nhập Dữ Liệu
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Liên Kết</div>
+      <div class="nav-item" onclick="window.open('index.html','_blank')">
+        <span class="nav-icon">🌐</span> Xem Website
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">👤</div>
+      <div class="user-info">
+        <strong>Admin</strong>
+        <small id="usernameDisplay">Chưa cấu hình</small>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<div class="main-content">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="pageTitle">Dashboard</h1>
+      <p id="pageSubtitle">Tổng quan cửa hàng</p>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline btn-sm" onclick="syncFromGitHub()">🔄 Đồng Bộ</button>
+      <button class="btn btn-gold btn-sm" onclick="publishToGitHub()">🚀 Đăng Lên GitHub</button>
+    </div>
+  </header>
+
+  <!-- ─── PAGE: DASHBOARD ─── -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon gold">💍</div>
+        <div class="stat-info">
+          <strong id="stat-products">0</strong>
+          <span>Sản Phẩm</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon silver">📁</div>
+        <div class="stat-info">
+          <strong id="stat-categories">0</strong>
+          <span>Danh Mục</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-info">
+          <strong id="stat-instock">0</strong>
+          <span>Còn Hàng</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">🖼️</div>
+        <div class="stat-info">
+          <strong id="stat-images">0</strong>
+          <span>Hình Ảnh</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT PRODUCTS -->
+    <div class="table-card">
+      <div style="padding:20px 24px; border-bottom:1px solid var(--dark-3); display:flex; justify-content:space-between; align-items:center">
+        <h3 style="font-size:1rem; font-weight:600">Sản Phẩm Gần Đây</h3>
+        <button class="btn btn-outline btn-sm" data-page="products" onclick="switchPage('products')">Xem Tất Cả →</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Sản Phẩm</th>
+          <th>Danh Mục</th>
+          <th>Giá</th>
+          <th>Trạng Thái</th>
+          <th>Thao Tác</th>
+        </tr></thead>
+        <tbody id="recentProductsTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- STATUS PANEL -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px">
+      <div class="config-section">
+        <h3>🔗 Trạng Thái GitHub</h3>
+        <p>Kết nối tới repository GitHub Pages của bạn</p>
+        <div class="config-status" id="githubStatusDash">
+          <div class="status-dot yellow"></div>
+          <span>Chưa cấu hình</span>
+        </div>
+      </div>
+      <div class="config-section">
+        <h3>💡 Hướng Dẫn Nhanh</h3>
+        <p>Quy trình cập nhật sản phẩm</p>
+        <ol style="font-size:.85rem; color:var(--text-muted); padding-left:20px; line-height:2">
+          <li>Thêm / sửa sản phẩm trong mục <strong style="color:var(--gold)">Sản Phẩm</strong></li>
+          <li>Nhấn <strong style="color:var(--gold)">🚀 Đăng Lên GitHub</strong></li>
+          <li>Website tự động cập nhật sau ~30 giây</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PAGE: PRODUCTS ─── -->
+  <div class="page" id="page-products">
+    <div class="table-controls">
+      <div class="search-field">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="productSearch" placeholder="Tìm kiếm sản phẩm...">
+      </div>
+      <select class="select-field" id="categoryFilter">
+        <option value="">Tất cả danh mục</option>
+        <option value="Nhẫn">Nhẫn</option>
+        <option value="Dây Chuyền">Dây Chuyền</option>
+        <option value="Vòng Tay">Vòng Tay</option>
+        <option value="Bông Tai">Bông Tai</option>
+        <option value="Lắc Chân">Lắc Chân</option>
+      </select>
+      <button class="btn btn-gold" onclick="switchPage('add-product')">+ Thêm Sản Phẩm</button>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th>Sản Phẩm</th>
+          <th>Danh Mục</th>
+          <th>Giá</th>
+          <th>Giá Gốc</th>
+          <th>Ảnh</th>
+          <th>Trạng Thái</th>
+          <th>Đánh Giá</th>
+          <th>Thao Tác</th>
+        </tr></thead>
+        <tbody id="productsTbody"></tbody>
+      </table>
+      <div id="noProducts" class="empty-state" style="display:none">
+        <span class="empty-icon">💍</span>
+        <h3>Chưa có sản phẩm</h3>
+        <p>Thêm sản phẩm đầu tiên của bạn</p>
+      </div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- ─── PAGE: ADD / EDIT PRODUCT ─── -->
+  <div class="page" id="page-add-product">
+    <form id="productForm" autocomplete="off">
+      <input type="hidden" id="editId">
+
+      <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:24px; align-items:start">
+
+        <!-- LEFT COL -->
+        <div style="display:flex; flex-direction:column; gap:20px">
+
+          <!-- Basic Info -->
+          <div class="config-section" style="padding:24px">
+            <h3>📝 Thông Tin Sản Phẩm</h3>
+            <p>Thông tin cơ bản của sản phẩm</p>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="form-label">Tên Sản Phẩm *</label>
+                <input class="form-input" id="f-name" placeholder="Vd: Nhẫn Bạc Hoa Hồng 925" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Danh Mục *</label>
+                <select class="form-select" id="f-category" required>
+                  <option value="">-- Chọn danh mục --</option>
+                  <option value="Nhẫn">Nhẫn</option>
+                  <option value="Dây Chuyền">Dây Chuyền</option>
+                  <option value="Vòng Tay">Vòng Tay</option>
+                  <option value="Bông Tai">Bông Tai</option>
+                  <option value="Lắc Chân">Lắc Chân</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nhãn (Badge)</label>
+                <select class="form-select" id="f-badge">
+                  <option value="">Không có</option>
+                  <option value="Mới">Mới</option>
+                  <option value="Bán Chạy">Bán Chạy</option>
+                  <option value="Hot">Hot</option>
+                  <option value="Sale">Sale</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Giá Bán (₫) *</label>
+                <input class="form-input" id="f-price" type="number" min="0" placeholder="350000" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Giá Gốc (₫)</label>
+                <input class="form-input" id="f-originalPrice" type="number" min="0" placeholder="450000">
+                <div class="form-help">Để trống nếu không có khuyến mãi</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Điểm Đánh Giá</label>
+                <input class="form-input" id="f-rating" type="number" min="1" max="5" step="0.1" placeholder="4.8">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Số Lượng Đánh Giá</label>
+                <input class="form-input" id="f-reviews" type="number" min="0" placeholder="128">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">Mô Tả Sản Phẩm *</label>
+                <textarea class="form-textarea" id="f-description" rows="4" placeholder="Mô tả chi tiết về sản phẩm..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tình Trạng</label>
+                <select class="form-select" id="f-inStock">
+                  <option value="true">Còn Hàng</option>
+                  <option value="false">Hết Hàng</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COL: IMAGES -->
+        <div style="display:flex; flex-direction:column; gap:20px">
+          <div class="config-section" style="padding:24px">
+            <h3>🖼️ Hình Ảnh Sản Phẩm</h3>
+            <p>Thêm ảnh bằng URL hoặc tải lên từ máy tính</p>
+
+            <!-- URL input -->
+            <div style="margin-bottom:16px">
+              <label class="form-label">Thêm ảnh bằng URL</label>
+              <div class="url-input-row" style="margin-top:6px">
+                <input id="imgUrlInput" type="url" placeholder="https://example.com/image.jpg">
+                <button type="button" class="btn btn-outline btn-sm" onclick="addImageUrl()">➕ Thêm</button>
+              </div>
+            </div>
+
+            <!-- Drag & Drop Upload -->
+            <label class="image-upload-area" id="uploadArea">
+              <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFileUpload(event)">
+              <div class="upload-icon">📁</div>
+              <div class="upload-text">
+                <strong>Kéo thả ảnh vào đây</strong>
+                <span>hoặc click để chọn file (JPG, PNG, WEBP)</span>
+              </div>
+            </label>
+
+            <!-- Note về hosting ảnh -->
+            <div class="alert alert-warning" style="margin-top:12px; font-size:.8rem">
+              ⚠️ GitHub Pages không lưu file nhị phân qua API. Hãy dùng <strong>URL ảnh</strong> từ Imgur, Cloudinary, hoặc đặt ảnh vào thư mục <code>images/</code> và dùng đường dẫn tương đối.
+            </div>
+
+            <!-- Preview grid -->
+            <div class="images-preview" id="imagesPreview" style="margin-top:16px"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FORM ACTIONS -->
+      <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px">
+        <button type="button" class="btn btn-outline" onclick="resetForm()">↩ Hủy</button>
+        <button type="submit" class="btn btn-gold" id="saveBtn">💾 Lưu Sản Phẩm</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ─── PAGE: GITHUB SETUP ─── -->
+  <div class="page" id="page-github">
+    <div style="max-width:700px; margin:0 auto">
+
+      <!-- Hướng dẫn -->
+      <div class="config-section">
+        <h3>📖 Cách Hoạt Động</h3>
+        <p>Hệ thống này dùng GitHub API để cập nhật <code>products.json</code> trực tiếp lên repo — không cần server!</p>
+        <ol style="font-size:.875rem; color:var(--text-muted); padding-left:20px; line-height:2.2; margin-top:12px">
+          <li>Tạo repository trên GitHub và bật <strong style="color:var(--gold)">GitHub Pages</strong> (Settings → Pages → Deploy from branch <code>main</code>)</li>
+          <li>Tạo <strong style="color:var(--gold)">Personal Access Token</strong>: GitHub Settings → Developer Settings → Personal Access Tokens → Fine-grained tokens</li>
+          <li>Token cần quyền <strong style="color:var(--gold)">Contents: Read & Write</strong> cho repository của bạn</li>
+          <li>Điền thông tin phía dưới và nhấn <strong style="color:var(--gold)">Kiểm Tra Kết Nối</strong></li>
+          <li>Sau đó nhấn <strong style="color:var(--gold)">🚀 Đăng Lên GitHub</strong> để cập nhật website</li>
+        </ol>
+      </div>
+
+      <!-- TOKEN -->
+      <div class="config-section">
+        <h3>🔑 Cấu Hình GitHub</h3>
+        <p>Thông tin này được lưu trong localStorage của trình duyệt, không gửi đi đâu ngoài GitHub API.</p>
+
+        <div class="form-grid" style="gap:16px">
+          <div class="form-group">
+            <label class="form-label">GitHub Username</label>
+            <input class="form-input" id="gh-username" placeholder="your-username">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tên Repository</label>
+            <input class="form-input" id="gh-repo" placeholder="your-repo-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Branch</label>
+            <input class="form-input" id="gh-branch" placeholder="main" value="main">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Đường dẫn file JSON</label>
+            <input class="form-input" id="gh-filepath" placeholder="products.json" value="products.json">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Personal Access Token</label>
+            <div class="token-input">
+              <input class="form-input" id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+              <button type="button" class="token-toggle" onclick="toggleToken()">👁</button>
+            </div>
+            <div class="form-help">
+              Tạo token tại: <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--gold)">github.com/settings/tokens</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:20px">
+          <button class="btn btn-outline" onclick="saveGithubConfig()">💾 Lưu Cấu Hình</button>
+          <button class="btn btn-gold" onclick="testConnection()">🔌 Kiểm Tra Kết Nối</button>
+        </div>
+
+        <div class="config-status" id="connectionStatus" style="margin-top:16px; display:none">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText"></span>
+        </div>
+      </div>
+
+      <!-- YOUR SITE URL -->
+      <div class="config-section">
+        <h3>🌐 URL Website Của Bạn</h3>
+        <p>Sau khi push lên GitHub Pages, website sẽ có địa chỉ:</p>
+        <div style="background:var(--dark-3); border-radius:8px; padding:14px 18px; font-family:monospace; font-size:.9rem; color:var(--gold); margin-top:8px" id="siteUrlDisplay">
+          https://[username].github.io/[repo-name]/
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copySiteUrl()">📋 Sao Chép URL</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── PAGE: EXPORT / IMPORT ─── -->
+  <div class="page" id="page-export">
+    <div style="max-width:700px; margin:0 auto">
+
+      <div class="export-grid">
+        <div class="export-card">
+          <div class="export-icon">⬇️</div>
+          <h4>Xuất JSON</h4>
+          <p>Tải xuống file products.json hiện tại về máy tính để sao lưu.</p>
+          <button class="btn btn-gold" onclick="exportJSON()">Tải Xuống JSON</button>
+        </div>
+        <div class="export-card">
+          <div class="export-icon">⬆️</div>
+          <h4>Nhập JSON</h4>
+          <p>Khôi phục dữ liệu từ file products.json đã sao lưu trước đó.</p>
+          <label class="btn btn-outline" style="cursor:pointer">
+            Chọn File JSON
+            <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+          </label>
+        </div>
+      </div>
+
+      <div class="config-section" style="margin-top:24px">
+        <h3>⚠️ Xóa Toàn Bộ Dữ Liệu</h3>
+        <p>Xóa tất cả sản phẩm khỏi bộ nhớ cục bộ. Hành động này không thể hoàn tác.</p>
+        <button class="btn btn-danger" style="margin-top:16px" onclick="clearAllData()">🗑 Xóa Tất Cả</button>
+      </div>
+
+      <div class="config-section" style="margin-top:24px">
+        <h3>📥 Load products.json từ Repo</h3>
+        <p>Tải dữ liệu mới nhất từ GitHub về admin panel (cần cấu hình GitHub trước).</p>
+        <button class="btn btn-outline" style="margin-top:16px" onclick="syncFromGitHub()">🔄 Đồng Bộ Từ GitHub</button>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end main-content -->
+
+<!-- ═══════════════════════════════════════
+     DELETE CONFIRM MODAL
+═══════════════════════════════════════ -->
+<div class="modal-backdrop" id="deleteModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <h2>Xác Nhận Xóa</h2>
+      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc muốn xóa sản phẩm <strong id="deleteProductName"></strong>?</p>
+      <p style="font-size:.85rem; color:var(--text-muted); margin-top:8px">Hành động này sẽ xóa khỏi bộ nhớ cục bộ. Nhớ đăng lên GitHub để cập nhật website.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeDeleteModal()">Hủy</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-backdrop" id="publishModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h2>🚀 Đăng Lên GitHub</h2>
+      <button class="modal-close" onclick="document.getElementById('publishModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="publishStatus">Đang kết nối tới GitHub...</p>
+      <div class="progress-bar-wrap" style="margin-top:16px">
+        <div class="progress-bar" id="publishProgress" style="width:0%"></div>
+      </div>
+      <div id="publishLog" style="margin-top:16px; font-size:.8rem; color:var(--text-muted); font-family:monospace; max-height:150px; overflow-y:auto; background:var(--dark-3); border-radius:8px; padding:12px; display:none"></div>
+    </div>
+    <div class="modal-footer" id="publishFooter" style="display:none">
+      <button class="btn btn-outline" onclick="document.getElementById('publishModal').classList.remove('open')">Đóng</button>
+      <a class="btn btn-gold" id="viewSiteBtn" href="#" target="_blank">🌐 Xem Website</a>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-admin" id="adminToast"></div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

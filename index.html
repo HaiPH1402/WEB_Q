@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bạc Tiên - Trang Sức Bạc Cao Cấp</title>
+  <meta name="description" content="Cửa hàng trang sức bạc 925 cao cấp - Nhẫn, Dây Chuyền, Vòng Tay, Bông Tai đẹp, giá tốt. Bảo hành chất lượng.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header" id="header">
+  <div class="header-top">
+    <p>✨ Miễn phí vận chuyển đơn từ 500K &nbsp;|&nbsp; Bảo hành 12 tháng &nbsp;|&nbsp; Đổi trả 7 ngày</p>
+  </div>
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">⬡</span>
+      <div>
+        <span class="logo-main">Bạc Tiên</span>
+        <span class="logo-sub">Silver Jewelry</span>
+      </div>
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Trang Chủ</a></li>
+      <li><a href="#categories">Danh Mục</a></li>
+      <li><a href="#products">Sản Phẩm</a></li>
+      <li><a href="#about">Về Chúng Tôi</a></li>
+      <li><a href="#contact">Liên Hệ</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="search-btn" id="searchBtn" title="Tìm kiếm">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="cart-btn" id="cartBtn" title="Giỏ hàng">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- ===== SEARCH BAR ===== -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm trang sức bạc..." autocomplete="off">
+    <button id="closeSearch">✕</button>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-particles"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">✦ Bộ Sưu Tập 2025 ✦</p>
+    <h1 class="hero-title">Vẻ Đẹp Thuần Khiết<br><em>Từ Bạc 925</em></h1>
+    <p class="hero-subtitle">Trang sức bạc cao cấp được chế tác thủ công tỉ mỉ — mỗi món đồ là một tác phẩm nghệ thuật dành riêng cho bạn.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Khám Phá Ngay</a>
+      <a href="#about" class="btn-ghost">Tìm Hiểu Thêm</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">2K+</span><span class="stat-label">Khách hàng</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num">500+</span><span class="stat-label">Sản phẩm</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Bạc 925</span></div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-indicator">
+      <div class="scroll-dot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST BADGES ===== -->
+<section class="trust-bar">
+  <div class="trust-container">
+    <div class="trust-item">
+      <span class="trust-icon">🔒</span>
+      <div><strong>Bảo Chứng Chính Hãng</strong><p>100% Bạc 925 có kiểm định</p></div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">🚚</span>
+      <div><strong>Giao Hàng Toàn Quốc</strong><p>Miễn phí từ 500K</p></div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">💎</span>
+      <div><strong>Chế Tác Thủ Công</strong><p>Từng chi tiết tinh xảo</p></div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">🔄</span>
+      <div><strong>Đổi Trả Dễ Dàng</strong><p>7 ngày không lý do</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORIES ===== -->
+<section class="categories" id="categories">
+  <div class="section-header">
+    <p class="section-eyebrow">Khám Phá</p>
+    <h2 class="section-title">Danh Mục Sản Phẩm</h2>
+  </div>
+  <div class="categories-grid" id="categoriesGrid">
+    <div class="category-card" data-filter="Nhẫn">
+      <div class="category-img-wrap">
+        <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=80" alt="Nhẫn Bạc" loading="lazy">
+        <div class="category-overlay"></div>
+      </div>
+      <p>Nhẫn</p>
+    </div>
+    <div class="category-card" data-filter="Dây Chuyền">
+      <div class="category-img-wrap">
+        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80" alt="Dây Chuyền Bạc" loading="lazy">
+        <div class="category-overlay"></div>
+      </div>
+      <p>Dây Chuyền</p>
+    </div>
+    <div class="category-card" data-filter="Vòng Tay">
+      <div class="category-img-wrap">
+        <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80" alt="Vòng Tay Bạc" loading="lazy">
+        <div class="category-overlay"></div>
+      </div>
+      <p>Vòng Tay</p>
+    </div>
+    <div class="category-card" data-filter="Bông Tai">
+      <div class="category-img-wrap">
+        <img src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=400&q=80" alt="Bông Tai Bạc" loading="lazy">
+        <div class="category-overlay"></div>
+      </div>
+      <p>Bông Tai</p>
+    </div>
+    <div class="category-card" data-filter="Lắc Chân">
+      <div class="category-img-wrap">
+        <img src="https://images.unsplash.com/photo-1573408301185-9519f94aab18?w=400&q=80" alt="Lắc Chân Bạc" loading="lazy">
+        <div class="category-overlay"></div>
+      </div>
+      <p>Lắc Chân</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRODUCTS ===== -->
+<section class="products-section" id="products">
+  <div class="section-header">
+    <p class="section-eyebrow">Bộ Sưu Tập</p>
+    <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+    <p class="section-desc">Được chế tác từ bạc 925 nguyên chất — sang trọng, bền đẹp theo thời gian</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-cat="all">Tất Cả</button>
+    <button class="filter-btn" data-cat="Nhẫn">Nhẫn</button>
+    <button class="filter-btn" data-cat="Dây Chuyền">Dây Chuyền</button>
+    <button class="filter-btn" data-cat="Vòng Tay">Vòng Tay</button>
+    <button class="filter-btn" data-cat="Bông Tai">Bông Tai</button>
+    <button class="filter-btn" data-cat="Lắc Chân">Lắc Chân</button>
+  </div>
+
+  <div class="products-grid" id="productsGrid">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Đang tải sản phẩm...</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BANNER ===== -->
+<section class="promo-banner">
+  <div class="promo-content">
+    <p class="promo-eyebrow">Ưu Đãi Đặc Biệt</p>
+    <h2>Giảm Đến 30%<br>Bộ Sưu Tập Mùa Hè</h2>
+    <p>Sử dụng mã <strong>BACTIEN30</strong> khi thanh toán</p>
+    <a href="#products" class="btn-primary">Mua Ngay</a>
+  </div>
+  <div class="promo-deco">
+    <div class="promo-circle c1"></div>
+    <div class="promo-circle c2"></div>
+    <div class="promo-circle c3"></div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="about" id="about">
+  <div class="about-content">
+    <div class="about-text">
+      <p class="section-eyebrow">Câu Chuyện Của Chúng Tôi</p>
+      <h2 class="section-title">Nghệ Thuật Chế Tác Bạc<br>Hơn 10 Năm Kinh Nghiệm</h2>
+      <p>Bạc Tiên ra đời từ niềm đam mê với những món trang sức thủ công tinh xảo. Chúng tôi tin rằng mỗi trang sức không chỉ là phụ kiện, mà còn là câu chuyện — về tình yêu, về ký ức, về phong cách riêng của bạn.</p>
+      <p>Mỗi sản phẩm được chế tác từ bạc 925 nguyên chất, qua bàn tay nghệ nhân tài hoa với hàng nghìn giờ tỉ mỉ, tạo nên những tác phẩm nghệ thuật đầy cảm xúc.</p>
+      <ul class="about-list">
+        <li>✦ Bạc 925 nguyên chất, có kiểm định độc lập</li>
+        <li>✦ Chế tác thủ công từng chi tiết</li>
+        <li>✦ Bảo hành 12 tháng toàn diện</li>
+        <li>✦ Đội ngũ tư vấn tận tâm 24/7</li>
+      </ul>
+    </div>
+    <div class="about-visual">
+      <div class="about-img-wrap">
+        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&q=80" alt="Chế tác trang sức bạc" loading="lazy">
+        <div class="about-badge">
+          <span class="badge-num">925</span>
+          <span class="badge-txt">Sterling Silver</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials">
+  <div class="section-header">
+    <p class="section-eyebrow">Khách Hàng Nói Gì</p>
+    <h2 class="section-title">Đánh Giá Thật Từ Người Mua</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Vòng tay bạc Celtic của shop đẹp hơn cả ảnh! Đeo vào rất sang, nhiều người hỏi mua ở đâu. Sẽ quay lại ủng hộ shop."</p>
+      <div class="reviewer"><img src="https://i.pravatar.cc/40?img=1" alt="Reviewer"><strong>Nguyễn Thị Lan</strong></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Mua dây chuyền làm quà sinh nhật cho người yêu, bạn ấy thích lắm. Hộp đựng cũng đẹp, rất đáng tiền. Cảm ơn shop nhiều!"</p>
+      <div class="reviewer"><img src="https://i.pravatar.cc/40?img=5" alt="Reviewer"><strong>Trần Minh Đức</strong></div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Chất lượng bạc rất tốt, đeo cả tháng không bị xỉn hay dị ứng. Shop tư vấn nhiệt tình, giao hàng nhanh. Rất hài lòng!"</p>
+      <div class="reviewer"><img src="https://i.pravatar.cc/40?img=9" alt="Reviewer"><strong>Phạm Thu Hà</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="contact" id="contact">
+  <div class="contact-container">
+    <div class="contact-info">
+      <p class="section-eyebrow">Liên Hệ</p>
+      <h2>Chúng Tôi Luôn<br>Sẵn Sàng Tư Vấn</h2>
+      <div class="contact-items">
+        <div class="contact-item">
+          <span class="ci-icon">📍</span>
+          <div><strong>Địa Chỉ</strong><p>123 Đường Lê Lợi, Q.1, TP.HCM</p></div>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">📞</span>
+          <div><strong>Điện Thoại</strong><p>0909 123 456</p></div>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">📧</span>
+          <div><strong>Email</strong><p>hello@bactien.vn</p></div>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">🕐</span>
+          <div><strong>Giờ Làm Việc</strong><p>8:00 - 21:00, Thứ 2 - Chủ Nhật</p></div>
+        </div>
+      </div>
+    </div>
+    <form class="contact-form" id="contactForm">
+      <h3>Gửi Tin Nhắn</h3>
+      <div class="form-row">
+        <input type="text" placeholder="Họ và tên" required>
+        <input type="tel" placeholder="Số điện thoại" required>
+      </div>
+      <input type="email" placeholder="Email của bạn">
+      <textarea rows="4" placeholder="Nội dung tin nhắn..." required></textarea>
+      <button type="submit" class="btn-primary btn-full">Gửi Tin Nhắn ✉</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <span class="logo-icon">⬡</span>
+        <div>
+          <span class="logo-main">Bạc Tiên</span>
+          <span class="logo-sub">Silver Jewelry</span>
+        </div>
+      </a>
+      <p>Trang sức bạc 925 cao cấp, chế tác thủ công tỉ mỉ — vẻ đẹp vĩnh cửu dành cho bạn.</p>
+      <div class="social-links">
+        <a href="#" class="social-link" title="Facebook">fb</a>
+        <a href="#" class="social-link" title="Instagram">ig</a>
+        <a href="#" class="social-link" title="TikTok">tk</a>
+        <a href="#" class="social-link" title="YouTube">yt</a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <h4>Sản Phẩm</h4>
+      <ul>
+        <li><a href="#products">Nhẫn Bạc</a></li>
+        <li><a href="#products">Dây Chuyền</a></li>
+        <li><a href="#products">Vòng Tay</a></li>
+        <li><a href="#products">Bông Tai</a></li>
+        <li><a href="#products">Lắc Chân</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Hỗ Trợ</h4>
+      <ul>
+        <li><a href="#">Chính Sách Giao Hàng</a></li>
+        <li><a href="#">Chính Sách Đổi Trả</a></li>
+        <li><a href="#">Bảo Hành</a></li>
+        <li><a href="#">Hướng Dẫn Chọn Size</a></li>
+        <li><a href="#">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-newsletter">
+      <h4>Nhận Ưu Đãi</h4>
+      <p>Đăng ký nhận thông báo về sản phẩm mới và khuyến mại đặc biệt.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Email của bạn...">
+        <button>→</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Bạc Tiên Silver Jewelry. Tất cả quyền được bảo lưu.</p>
+    <p>Made with ♥ in Vietnam</p>
+  </div>
+</footer>
+
+<!-- ===== CART SIDEBAR ===== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Giỏ Hàng</h3>
+    <button id="closeCart">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <span>🛒</span>
+      <p>Giỏ hàng trống</p>
+      <a href="#products" id="startShop" class="btn-primary">Mua Sắm Ngay</a>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Tổng cộng:</span>
+      <strong id="cartTotal">0₫</strong>
+    </div>
+    <button class="btn-primary btn-full" id="checkoutBtn">Thanh Toán</button>
+    <p class="cart-note">Miễn phí vận chuyển từ 500K | Bảo hành 12 tháng</p>
+  </div>
+</div>
+
+<!-- ===== PRODUCT MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="product-modal" id="productModal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ===== BACK TO TOP ===== -->
+<button class="back-to-top" id="backToTop" title="Lên đầu trang">↑</button>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

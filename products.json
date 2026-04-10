@@ -1,0 +1,92 @@
+[
+  {
+    "id": "1",
+    "name": "Nhẫn Bạc Hoa Hồng",
+    "price": 350000,
+    "originalPrice": 450000,
+    "category": "Nhẫn",
+    "description": "Nhẫn bạc 925 hình hoa hồng tinh xảo, thiết kế lãng mạn và sang trọng. Phù hợp làm quà tặng cho người yêu.",
+    "images": [
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80"
+    ],
+    "badge": "Bán Chạy",
+    "rating": 4.9,
+    "reviews": 128,
+    "inStock": true
+  },
+  {
+    "id": "2",
+    "name": "Dây Chuyền Bạc Moon",
+    "price": 520000,
+    "originalPrice": 680000,
+    "category": "Dây Chuyền",
+    "description": "Dây chuyền bạc 925 mặt trăng lưỡi liềm đính đá Zircon, ánh sáng lung linh huyền ảo. Chiều dài 45cm có thể điều chỉnh.",
+    "images": [
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80"
+    ],
+    "badge": "Mới",
+    "rating": 4.8,
+    "reviews": 89,
+    "inStock": true
+  },
+  {
+    "id": "3",
+    "name": "Vòng Tay Bạc Celtic",
+    "price": 420000,
+    "originalPrice": 420000,
+    "category": "Vòng Tay",
+    "description": "Vòng tay bạc 925 họa tiết Celtic cổ điển, biểu tượng may mắn và bảo vệ. Kích thước phù hợp cổ tay 14-18cm.",
+    "images": [
+      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&q=80"
+    ],
+    "badge": "",
+    "rating": 4.7,
+    "reviews": 65,
+    "inStock": true
+  },
+  {
+    "id": "4",
+    "name": "Bông Tai Bạc Ngôi Sao",
+    "price": 280000,
+    "originalPrice": 320000,
+    "category": "Bông Tai",
+    "description": "Bông tai bạc 925 hình ngôi sao 5 cánh đính đá Zircon trắng tinh, thanh lịch và hiện đại. Chốt bướm an toàn.",
+    "images": [
+      "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600&q=80"
+    ],
+    "badge": "Sale",
+    "rating": 4.6,
+    "reviews": 42,
+    "inStock": true
+  },
+  {
+    "id": "5",
+    "name": "Lắc Chân Bạc Duyên Dáng",
+    "price": 390000,
+    "originalPrice": 480000,
+    "category": "Lắc Chân",
+    "description": "Lắc chân bạc 925 thiết kế nhẹ nhàng với charm bướm và hoa nhỏ xinh. Chiều dài 23cm điều chỉnh được.",
+    "images": [
+      "https://images.unsplash.com/photo-1573408301185-9519f94aab18?w=600&q=80"
+    ],
+    "badge": "Hot",
+    "rating": 4.8,
+    "reviews": 97,
+    "inStock": true
+  },
+  {
+    "id": "6",
+    "name": "Mặt Dây Chuyền Bạc Tâm",
+    "price": 460000,
+    "originalPrice": 460000,
+    "category": "Dây Chuyền",
+    "description": "Mặt dây chuyền bạc 925 hình trái tim đính đá Garnet đỏ ruby, biểu tượng tình yêu vĩnh cửu. Kèm dây chuỗi bạc.",
+    "images": [
+      "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&q=80"
+    ],
+    "badge": "Mới",
+    "rating": 5.0,
+    "reviews": 34,
+    "inStock": true
+  }
+]
