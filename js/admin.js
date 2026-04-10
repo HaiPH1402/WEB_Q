@@ -502,6 +502,12 @@
       showStatus('yellow', '⚠ Token có thể không đúng định dạng (phải bắt đầu bằng ghp_ hoặc github_pat_)');
     }
 
+    // Kiểm tra file:// protocol — trình duyệt chặn CORS requests từ file://
+    if (window.location.protocol === 'file:') {
+      showStatus('red', '✕ Đang mở trực tiếp từ file — Mở admin từ GitHub Pages hoặc dùng VS Code Live Server (click "Go Live") để kết nối được GitHub API.');
+      return;
+    }
+
     showStatus('yellow', '⏳ Đang kiểm tra kết nối...');
     try {
       const res = await fetch(`https://api.github.com/repos/${cfg.user}/${cfg.repo}`, {
@@ -584,6 +590,14 @@
       logEl.scrollTop = logEl.scrollHeight;
     }
 
+    // Kiểm tra file:// protocol
+    if (window.location.protocol === 'file:') {
+      setStatus('❌ Đang mở file trực tiếp — Cần mở admin từ GitHub Pages hoặc VS Code Live Server để Publish được.');
+      appendLog('✕ Không thể gọi GitHub API từ file:// protocol. Mở admin.html qua http:// hoặc https://');
+      footerEl.style.display = 'flex';
+      return;
+    }
+
     try {
       appendLog(`📡 Kết nối tới: github.com/${cfg.user}/${cfg.repo}`);
       appendLog(`📄 File đích: ${cfg.path} (branch: ${cfg.branch})`);
@@ -626,7 +640,10 @@
 
       // Bước 2: Encode Base64 (hỗ trợ tiếng Việt UTF-8)
       const jsonStr = JSON.stringify(products, null, 2);
-      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      const utf8Bytes = new TextEncoder().encode(jsonStr);
+      let b64 = '';
+      utf8Bytes.forEach(b => { b64 += String.fromCharCode(b); });
+      b64 = btoa(b64);
       appendLog(`✓ Đã mã hóa ${products.length} sản phẩm (${(jsonStr.length/1024).toFixed(1)}KB)`);
 
       setProgress(60);

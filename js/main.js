@@ -32,6 +32,16 @@
      PRODUCTS — Fetch from products.json
   ══════════════════════════════════════════ */
   async function loadProducts() {
+    // Ưu tiên dữ liệu admin từ localStorage (đồng bộ tức thì khi sửa ở admin)
+    const cached = localStorage.getItem('bactien_products');
+    if (cached) {
+      try {
+        products = JSON.parse(cached);
+        renderProducts(products);
+        return;
+      } catch(e) {}
+    }
+
     try {
       const res  = await fetch('products.json?t=' + Date.now());
       products   = await res.json();
