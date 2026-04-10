@@ -17,10 +17,10 @@
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo">
-      <span class="logo-icon">⬡</span>
+      <div class="logo-gem">⬡</div>
       <div class="logo-text">
-        <strong>Bạc Tiên Admin</strong>
-        <small>Quản Trị Hệ Thống</small>
+        <strong>Bạc Tiên</strong>
+        <small>Admin Panel</small>
       </div>
     </div>
   </div>
@@ -70,6 +70,9 @@
   </div>
 </aside>
 
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 <!-- ═══════════════════════════════════════
      MAIN CONTENT
 ═══════════════════════════════════════ -->
@@ -78,8 +81,17 @@
   <!-- TOP BAR -->
   <header class="topbar">
     <div class="topbar-left">
-      <h1 id="pageTitle">Dashboard</h1>
-      <p id="pageSubtitle">Tổng quan cửa hàng</p>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar-title">
+        <h1 id="pageTitle">Dashboard</h1>
+        <div class="breadcrumb">
+          <span>Bạc Tiên Admin</span>
+          <span class="sep">›</span>
+          <span class="bc-current" id="pageBreadcrumb">Tổng quan</span>
+        </div>
+      </div>
     </div>
     <div class="topbar-actions">
       <button class="btn btn-outline btn-sm" onclick="syncFromGitHub()">🔄 Đồng Bộ</button>

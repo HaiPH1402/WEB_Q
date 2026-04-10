@@ -42,6 +42,17 @@
     setupForm();
     setupDragDrop();
     renderAll();
+
+    // Hash-based routing — load trang từ URL hash
+    const initialPage = getHashPage();
+    if (initialPage !== 'dashboard') switchPage(initialPage);
+    else history.replaceState({ page: 'dashboard' }, '', '#dashboard');
+
+    // Hamburger toggle (mobile)
+    document.getElementById('hamburger')?.addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('show');
+    });
   }
 
   /* ══════════════════════════════════════════
@@ -188,35 +199,73 @@
     });
   }
 
+  const PAGE_META = {
+    'dashboard':   { title: 'Dashboard',          crumb: 'Tổng quan' },
+    'products':    { title: 'Quản Lý Sản Phẩm',  crumb: 'Sản phẩm' },
+    'add-product': { title: 'Thêm Sản Phẩm',      crumb: 'Thêm mới' },
+    'github':      { title: 'GitHub Setup',        crumb: 'Cấu hình GitHub' },
+    'export':      { title: 'Xuất / Nhập Dữ Liệu', crumb: 'Backup & Restore' },
+  };
+
   window.switchPage = function(pageId) {
-    // Deactivate all
+    // Deactivate all pages
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-    // Activate target
+    // Activate target — re-trigger CSS animation
     const pageEl = document.getElementById('page-' + pageId);
-    if (pageEl) pageEl.classList.add('active');
+    if (pageEl) {
+      pageEl.style.animation = 'none';
+      pageEl.offsetHeight; // force reflow
+      pageEl.style.animation = '';
+      pageEl.classList.add('active');
+    }
     const navEl = document.querySelector(`.nav-item[data-page="${pageId}"]`);
     if (navEl) navEl.classList.add('active');
 
-    // Update topbar
-    const titles = {
-      'dashboard':   ['Dashboard', 'Tổng quan cửa hàng'],
-      'products':    ['Quản Lý Sản Phẩm', 'Danh sách tất cả sản phẩm'],
-      'add-product': ['Thêm Sản Phẩm', 'Điền thông tin sản phẩm mới'],
-      'github':      ['Cấu Hình GitHub', 'Kết nối GitHub Pages'],
-      'export':      ['Xuất / Nhập Dữ Liệu', 'Backup và khôi phục dữ liệu'],
-    };
-    const [title, sub] = titles[pageId] || ['Admin', ''];
-    setEl('pageTitle', title);
-    setEl('pageSubtitle', sub);
+    // Update topbar + breadcrumb
+    const meta = PAGE_META[pageId] || { title: 'Admin', crumb: '' };
+    setEl('pageTitle', meta.title);
+    setEl('pageBreadcrumb', meta.crumb);
 
-    // If add/edit page, reset if not editing
-    if (pageId === 'add-product' && !editingId) {
-      resetForm();
-    }
+    // Update URL hash (feels like real navigation)
+    history.pushState({ page: pageId }, '', '#' + pageId);
+
+    // Close mobile sidebar
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('show');
+
+    // Per-page logic
+    if (pageId === 'add-product' && !editingId) resetForm();
     if (pageId === 'products') renderProductsTable();
     if (pageId === 'dashboard') renderDashboard();
+  };
+
+  // Browser back/forward navigation
+  window.addEventListener('popstate', function(e) {
+    const page = (e.state && e.state.page) || getHashPage();
+    // Call directly without pushState again
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const pageEl = document.getElementById('page-' + page);
+    if (pageEl) { pageEl.style.animation = 'none'; pageEl.offsetHeight; pageEl.style.animation = ''; pageEl.classList.add('active'); }
+    const navEl = document.querySelector(`.nav-item[data-page="${page}"]`);
+    if (navEl) navEl.classList.add('active');
+    const meta = PAGE_META[page] || { title: 'Admin', crumb: '' };
+    setEl('pageTitle', meta.title);
+    setEl('pageBreadcrumb', meta.crumb);
+    if (page === 'products') renderProductsTable();
+    if (page === 'dashboard') renderDashboard();
+  });
+
+  function getHashPage() {
+    const h = window.location.hash.replace('#', '');
+    return PAGE_META[h] ? h : 'dashboard';
+  }
+
+  window.closeSidebar = function() {
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('show');
   };
 
   window.goPage = function(n) { currentPage = n; renderProductsTable(); };
