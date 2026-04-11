@@ -59,11 +59,29 @@
     { id:'6', name:'Mặt Dây Chuyền Bạc Tâm',  price:460000, originalPrice:460000, category:'Dây Chuyền', description:'Mặt dây chuyền bạc 925 hình trái tim.',          images:['https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&q=80'],  badge:'Mới',     rating:5.0, reviews:34,  inStock:true }
   ];
 
+  /* ── SKELETON LOADING ── */
+  function showSkeleton(n) {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    grid.innerHTML = Array.from({ length: n }, () => `
+      <div class="skeleton-card">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line med"></div>
+          <div class="skeleton-btn"></div>
+        </div>
+      </div>`).join('');
+  }
+
   /* ══════════════════════════════════════════
      LOAD PRODUCTS
   ══════════════════════════════════════════ */
   async function loadProducts() {
     if (!document.getElementById('productsGrid')) return;
+
+    showSkeleton(isHome ? 4 : 6);
 
     const cached = localStorage.getItem('bactien_products');
     if (cached) {
@@ -459,6 +477,35 @@
     return n.toLocaleString('vi-VN') + '₫';
   }
 
+  /* ── Counter animation for hero stats ── */
+  function setupCounters() {
+    const els = document.querySelectorAll('.stat-num[data-count]');
+    if (!els.length) return;
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el    = entry.target;
+        const end   = parseFloat(el.dataset.count);
+        const suf   = el.dataset.suffix || '';
+        const dur   = 1800;
+        const t0    = performance.now();
+        function tick(now) {
+          const p   = Math.min((now - t0) / dur, 1);
+          const ease = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(ease * end) + suf;
+          if (p < 1) requestAnimationFrame(tick);
+          else el.textContent = end + suf;
+        }
+        requestAnimationFrame(tick);
+        io.unobserve(el);
+      });
+    }, { threshold: 0.6 });
+    els.forEach(el => {
+      el.textContent = '0' + (el.dataset.suffix || '');
+      io.observe(el);
+    });
+  }
+
   /* ── Reveal sections (trust/category/testimonial/contact) ── */
   function setupRevealSections() {
     const io = new IntersectionObserver(entries => {
@@ -480,6 +527,7 @@
     loadProducts();
     updateCartUI();
     setupRevealSections();
+    setupCounters();
   }
 
   init();
